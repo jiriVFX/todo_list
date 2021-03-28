@@ -1,0 +1,53 @@
+      <main>
+        <!-- Intro Section -->
+        <section id="cafes" class="bg-lightgrey">
+          <div class="container-fluid text-left">
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <h1>To do list</h1>
+                <p class="text-secondary">Add tasks to to-do list.</p>
+
+                <form class="search-form" method="GET" action="{{ url_for('add') }}">
+                  <input class="form-control" type="search" name="add" placeholder="Add task" aria-label="Add task">
+                  <button class="btn" type="submit">Add Task</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- All Tasks -->
+          {% if tasks %}
+          <div class="container-fluid text-left">
+            {% for task in tasks.items %}
+            <div class="row">
+              <div class="col-lg-9 col-md-12">
+                <h2>{{ task.task_name }}</h2>
+                <ul class="list-inline">
+                  <li class="list-inline-item"><span class="far fa-clipboard"></span> {{ task.description }}</li>
+                  <li class="list-inline-item"><span class="far fa-clock"></span> {{ task.finish_by }}</li>
+                  {% if task.finished %}
+                  <li class="list-inline-item text-blue"><span class="far fa-check-circle"></span> Completed</li>
+                  {% else %}
+                  <li class="list-inline-item text-danger"><span class="far fa-times-circle"></span> Waiting</li>
+                  {% endif %}
+                </ul>
+              </div>
+              <div class="col-lg-3 col-md-12">
+                <a class="btn" href="{{ url_for('edit', page=page) }}" role="button">Edit</a>
+                <a class="btn danger" href="{{ url_for('remove', page=page) }}" role="button">Delete</a>
+              </div>
+            </div>
+            <hr />
+            {% endfor %}
+            {% for page in tasks.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+              {% if page %}
+                {% if tasks.page == page %}
+                  <a id="active" class="btn" href="{{ url_for('home', page=page) }}" role="button">{{ page }}</a>
+                {% else %}
+                  <a class="btn" href="{{ url_for('home', page=page) }}" role="button">{{ page }}</a>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </section>
+      </main>
