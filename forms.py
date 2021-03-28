@@ -8,5 +8,4 @@ class AddTaskForm(FlaskForm):
     task_name = StringField("Task name", validators=[DataRequired()])
     description = StringField("Description", validators=[DataRequired()])
     finish_by = DateTimeField("Finish by", validators=[DataRequired()])
-    finished = BooleanField("Finished")
     submit = SubmitField("Add Task")

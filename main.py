@@ -1,8 +1,7 @@
-from flask import Flask, jsonify, render_template, request, flash, redirect, url_for, session
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 import os
-from datetime import datetime
 from forms import AddTaskForm
 
 app = Flask(__name__)
@@ -27,16 +26,26 @@ class ToDo(db.Model):
 
 @app.route("/")
 def home():
+    new_form = AddTaskForm()
     page = request.args.get("page", default=1, type=int)
     todo = db.session.query(ToDo).paginate(per_page=10)
-    #user_agent = request.headers.get("User-Agent")
-    return render_template("todo.html", tasks=todo)
+    # user_agent = request.headers.get("User-Agent")
+    return render_template("todo.html", tasks=todo, form=new_form)
 
 
-@app.route("/add")
+@app.route("/add", methods=["POST"])
 def add():
-    page = request.args.get("page", default=1, type=int)
-    return render_template("todo.html")
+    new_list = ToDo(
+        task_name=request.form["task_name"],
+        description=request.form["description"],
+        finish_by=request.fomr["finish_by"],
+        finished=False,
+    )
+    db.session.add(new_list)
+    db.session.commit()
+
+    return redirect(url_for("home"))
+
 
 @app.route("/edit")
 def edit():
@@ -51,7 +60,7 @@ def remove():
 
 
 if __name__ == '__main__':
-    #db.create_all()
+    # db.create_all()
 
     # todo_list = ToDo(task_name="Third record", description="Finish the third record", finish_by=datetime.now(), finished=False)
     # db.session.add(todo_list)
