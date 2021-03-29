@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 import os
 from forms import AddTaskForm
+from datetime import datetime
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -24,7 +25,7 @@ class ToDo(db.Model):
     finished = db.Column(db.Boolean, nullable=False)
 
 
-@app.route("/")
+@app.route("/", methods=["POST", "GET"])
 def home():
     new_form = AddTaskForm()
     page = request.args.get("page", default=1, type=int)
@@ -35,10 +36,20 @@ def home():
 
 @app.route("/add", methods=["POST"])
 def add():
+    # Remove all previous flash messages
+    session.pop('_flashes', None)
+    flash("Enter valid datetime format.")
+
+    date = request.form.get("finish_date")
+    time = request.form["finish_time"]
+    date_time = date + " " + time
+    date_time = datetime.strptime(date_time, "%Y-%m-%d %H:%M")
+    print(date_time)
+
     new_list = ToDo(
         task_name=request.form["task_name"],
         description=request.form["description"],
-        finish_by=request.fomr["finish_by"],
+        finish_by=date_time,
         finished=False,
     )
     db.session.add(new_list)
@@ -61,8 +72,13 @@ def remove():
 
 if __name__ == '__main__':
     # db.create_all()
-
-    # todo_list = ToDo(task_name="Third record", description="Finish the third record", finish_by=datetime.now(), finished=False)
+    #
+    # todo_list = ToDo(
+    #     task_name="Third record",
+    #     description="Finish the third record",
+    #     finish_by=datetime.now(),
+    #     finished=False
+    # )
     # db.session.add(todo_list)
     # db.session.commit()
 

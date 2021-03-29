@@ -7,7 +7,23 @@
               <div class="col-lg-12 col-md-12">
                 <h1>To do list</h1>
                 <p class="text-secondary">Add tasks to to-do list.</p>
-                {{ wtf.quick_form(form, novalidate=False, method="post", button_map={"add": "primary"}) }}
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <ul class="flash">
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+<!--                <form method="POST" action="{{ url_for('add') }}">-->
+<!--                  {{ form.csrf_token }}-->
+<!--                  {{ form.task_name.label }} {{ form.task_name(size=100) }}-->
+<!--                  {{ form.task_name.description }} {{ form.description(size=100) }}-->
+<!--                  {{ form.task_name.description }} {{ form.description(size=100) }}-->
+<!--                  <input type="submit" value="Go">-->
+<!--                </form>-->
+                {{ wtf.quick_form(form, action=url_for("add"), novalidate=False, method="post", button_map={"add": "primary"}) }}
               </div>
             </div>
           </div>
