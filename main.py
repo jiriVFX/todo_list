@@ -62,12 +62,13 @@ def add():
 
 @app.route("/complete/<int:todo_id>")
 def complete(todo_id):
-    print(todo_id)
+    # Remove all previous flash messages
+    session.pop('_flashes', None)
     todo_to_complete = ToDo.query.get(todo_id)
     if todo_to_complete:
         todo_to_complete.finished = True
         db.session.commit()
-
+    flash("Task completed.")
     return redirect(url_for("home"))
 
 
