@@ -38,7 +38,6 @@ def home():
 def add():
     # Remove all previous flash messages
     session.pop('_flashes', None)
-    flash("Enter valid datetime format.")
 
     date = request.form.get("finish_date")
     time = request.form["finish_time"]
@@ -55,22 +54,40 @@ def add():
     db.session.add(new_list)
     db.session.commit()
 
+    # Make new flash message
+    flash("Task successfully added.")
+
     return redirect(url_for("home"))
 
 
-@app.route("/edit")
-def edit():
-    page = request.args.get("page", default=1, type=int)
-    return render_template("todo.html")
+@app.route("/complete/<int:todo_id>")
+def complete(todo_id):
+    print(todo_id)
+    todo_to_complete = ToDo.query.get(todo_id)
+    if todo_to_complete:
+        todo_to_complete.finished = True
+        db.session.commit()
+
+    return redirect(url_for("home"))
 
 
-@app.route("/remove")
-def remove():
-    page = request.args.get("page", default=1, type=int)
-    return render_template("todo.html")
+@app.route("/remove/<int:todo_id>")
+def remove(todo_id):
+    todo_to_delete = ToDo.query.get(todo_id)
+
+    # If to-do task was found in the database
+    if todo_to_delete:
+        db.session.delete(todo_to_delete)
+        db.session.commit()
+        # Remove all previous flash messages
+        session.pop('_flashes', None)
+        # Make new flash message
+        flash("Task removed.")
+    return redirect(url_for("home"))
 
 
 if __name__ == '__main__':
+    # Use the first time when creating DB
     # db.create_all()
     #
     # todo_list = ToDo(
