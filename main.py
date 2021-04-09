@@ -8,12 +8,12 @@ from datetime import datetime
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
-# .env file should contain your API_KEY, e.g. API_KEY=YourOwnApiKey
-API_KEY = os.environ.get("API_KEY")
 # Connect to the Database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tasks.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+
+print(app.secret_key)
 
 
 # To-do list Table Configuration
@@ -30,7 +30,7 @@ def home():
     new_form = AddTaskForm()
     page = request.args.get("page", default=1, type=int)
     todo = db.session.query(ToDo).paginate(per_page=10)
-    # user_agent = request.headers.get("User-Agent")
+
     return render_template("todo.html", tasks=todo, form=new_form)
 
 
